@@ -142,7 +142,7 @@ this README.
 
 This runs the BayesOptimiser on the n-dimensional Ackley function.
 
-`regression_example.py`
+`gp_regression_example.py`
 
 A Gaussian process with an additive Matern32 kernel and an automatic Gaussian process (that selected a product of two 
 additive periodic kernels) were tested on a yacht hydrodynamics regression problem [5]. The predictions from each 
