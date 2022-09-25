@@ -131,7 +131,7 @@ class DynamicBayesOptimiser(object):
                     x0 = bounds[:, 0] + torch.rand(bounds.size(0)) * (bounds[:, 1] - bounds[:, 0])
                     V_dx = torch.zeros(x0.size())
                     S_dx = torch.zeros(x0.size())
-                    for k in range(sub_opt_iters):
+                    for k in range(sub_opt_iters):  # 这个循环设到100
                         dx = self.acq_func.grad(x0, t_hist[-1] + torch.ones((1, 1)), y_min, self.gp).flatten()
                         V_dx = beta1 * V_dx + (1 - beta1) * dx
                         V_dx_corr = V_dx / (1 - beta1 ** (k + 1))

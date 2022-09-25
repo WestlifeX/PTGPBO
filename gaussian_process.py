@@ -10,7 +10,7 @@ class GaussianProcess(object):
         # Assuming the training data or objective function is noisy,
         # alpha should be set to the standard deviation of the noise
 
-    # nll: negative log likelihood， 干什么用的还不明确
+    # nll: negative log likelihood， 为了学超参
     def nll(self, x1, x2, y, det_tol=1e-12):
         b = y.size(0)  # n
         m = y.size(1)  # 1
