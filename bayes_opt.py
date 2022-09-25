@@ -11,6 +11,7 @@ class BayesOptimiser(object):
 
     def minimise(self, objective, bounds, iters, iter_loops=20,
                  sub_opt_iters=100, sub_opt_lr=0.05, n_inits=5, verbose=True):
+        # x_hist & y_hist可能就是一些先验的初始数据
         x_hist = None
         y_hist = None
         y_min = float('inf')
@@ -18,9 +19,11 @@ class BayesOptimiser(object):
         beta1 = 0.9
         beta2 = 0.99
 
+        # 从下界到上界遍历, n_inits就是想在这个区间里取几个点
         for x_sample in bounds[:, 0].view(1, -1) + torch.rand((n_inits, 1)) * \
                         (bounds[:, 1] - bounds[:, 0]).view(1, -1):
             y_sample = objective(x_sample)
+            # 找一下y_min，用处存疑
             if y_sample < y_min:
                 y_min = y_sample
                 x_min = x_sample
@@ -32,19 +35,20 @@ class BayesOptimiser(object):
                 y_hist = y_sample.view(1, -1)
 
         for i in range(iters):
-            self.gp.kernel.train()
+            self.gp.kernel.train()  # 设置成train模式
             self.gp.kernel.reset_params()
-            self.gp.fit(x_hist, y_hist)
+            self.gp.fit(x_hist, y_hist)  # 调整超参
             self.gp.kernel.eval()
             y_acq = float('inf')
 
             with torch.no_grad():
+                # iter_loops=20
                 for j in range(iter_loops):
                     x0 = bounds[:, 0] + torch.rand(bounds.size(0)) * (bounds[:, 1] - bounds[:, 0])
                     V_dx = torch.zeros(x0.size())
                     S_dx = torch.zeros(x0.size())
                     for k in range(sub_opt_iters):
-                        dx = self.acq_func.grad(x0, y_min, self.gp).flatten()
+                        dx = self.acq_func.grad(x0, y_min, self.gp).flatten()  # y_min是个没有用的参数
                         V_dx = beta1 * V_dx + (1 - beta1) * dx
                         V_dx_corr = V_dx / (1 - beta1 ** (k + 1))
                         S_dx = beta2 * S_dx + (1 - beta2) * dx.pow(2)

@@ -136,8 +136,8 @@ def ackley(x):
 
 bounds = torch.tensor([[-8.0, 8.0]]).expand(1,2)
 iters = 20
-kernel = krn.Matern32Kernel(1.0, 1.0, 'cpu') * \
-krn.Matern52Kernel(1.0, 1.0, 'cpu')
+kernel = krn.Matern32Kernel(1.0, 1.0) * \
+krn.Matern52Kernel(1.0, 1.0)
 gp = gaussp.GaussianProcess(kernel, alpha=0.0001)
 acq_func = Acquisition(1.0)
 optimiser = BayesOptimiser(gp, acq_func)
